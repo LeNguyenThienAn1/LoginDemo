@@ -1,0 +1,51 @@
+﻿@using LoginDemo.ViewModels;
+@model VerifyEmailViewModel;
+
+@{
+    ViewData["Title"] = "Verify Email";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<div class="account-container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="account-box shadow-lg p-5 rounded-4 bg-white" style="max-width: 400px; width: 100%;">
+        <h2 class="text-center mb-4 fw-bold text-primary">Verify Email</h2>
+        <form asp-action="VerifyEmail" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center"></div>
+
+            <!-- Email Field -->
+            <div class="mb-4">
+                <label asp-for="Email" class="form-label fw-medium text-dark">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-envelope-fill"></i></span>
+                    <input asp-for="Email" class="form-control shadow-sm" placeholder="Enter your email" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 p-3 fw-bold rounded-pill shadow-sm" id="verifyButton">
+                <span class="button-text">Verify Email</span>
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
+
+            <!-- Back Link -->
+            <div class="text-center mt-4">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Back to Home</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+    <script>
+        document.querySelector('form').addEventListener('submit', function () {
+            const button = document.getElementById('verifyButton');
+            button.querySelector('.button-text').classList.add('d-none');
+            button.querySelector('.spinner-border').classList.remove('d-none');
+            button.disabled = true;
+        });
+    </script>
+}

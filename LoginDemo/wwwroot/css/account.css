@@ -1,0 +1,61 @@
+﻿body {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    font-family: 'Poppins', sans-serif;
+}
+
+.account-container {
+    padding: 20px;
+}
+
+.account-box {
+    border: 1px solid #e0e0e0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .account-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+.form-label {
+    font-size: 0.95rem;
+}
+
+.form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    transition: border-color 0.3s ease;
+}
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+.input-group-text {
+    border-radius: 0.5rem 0 0 0.5rem;
+    border: 1px solid #ced4da;
+}
+
+.btn-primary {
+    background: #007bff;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+.text-primary {
+    color: #007bff !important;
+}
+
+    .text-primary:hover {
+        color: #0056b3 !important;
+    }
+
+.rounded-4 {
+    border-radius: 1rem !important;
+}
