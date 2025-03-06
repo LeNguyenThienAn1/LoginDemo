@@ -2,118 +2,55 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LoginDemo.Controllers
 {
-    [Authorize(Roles = "Admin")] // Chỉ Admin mới truy cập được
+ //   [Authorize(Roles = "Admin")] // Chỉ Admin mới truy cập được
     public class AdminController : Controller
     {
-        private readonly UserManager<Users> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ILogger<AdminController> _logger;
+        private readonly UserManager<Users> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public AdminController(
-            UserManager<Users> userManager,
-            RoleManager<IdentityRole> roleManager,
-            ILogger<AdminController> logger)
+        public AdminController(UserManager<Users> userManager, RoleManager<IdentityRole> roleManager)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _logger = logger;
+            this.userManager = userManager;
+            this.roleManager = roleManager;
         }
 
-        // ViewModel để truyền dữ liệu cho view Index
-        public class UserViewModel
+        // Hiển thị danh sách người dùng
+        public IActionResult Index()
         {
-            public string Id { get; set; }
-            public string FullName { get; set; }
-            public string Email { get; set; }
-            public IList<string> Roles { get; set; }
+            var users = userManager.Users.ToList();
+            return View(users);
         }
 
-        // Action để hiển thị trang chính của Admin
-        [HttpGet]
-        public async Task<IActionResult> Index(string searchQuery = null)
+        // Xóa tài khoản người dùng
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            try
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
             {
-                _logger.LogInformation("Admin accessed the user management page.");
-
-                // Lấy danh sách người dùng
-                var usersQuery = _userManager.Users.AsQueryable();
-                if (!string.IsNullOrEmpty(searchQuery))
-                {
-                    searchQuery = searchQuery.ToLower();
-                    usersQuery = usersQuery.Where(u => u.Email.ToLower().Contains(searchQuery) ||
-                                                      (u.FullName != null && u.FullName.ToLower().Contains(searchQuery)));
-                }
-
-                var users = await usersQuery.ToListAsync();
-
-                // Lấy vai trò của tất cả người dùng trong một lần truy vấn
-                var userViewModels = new List<UserViewModel>();
-                foreach (var user in users)
-                {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    userViewModels.Add(new UserViewModel
-                    {
-                        Id = user.Id,
-                        FullName = user.FullName,
-                        Email = user.Email,
-                        Roles = roles
-                    });
-                }
-
-                return View(userViewModels);
+                await userManager.DeleteAsync(user);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving the user list.");
-                return StatusCode(500, "An error occurred while retrieving the user list. Please try again later.");
-            }
+            return RedirectToAction("Index");
         }
 
-        // Action để xem chi tiết người dùng
-        [HttpGet]
-        public async Task<IActionResult> Details(string id)
+        // Thay đổi Role của người dùng
+        [HttpPost]
+        public async Task<IActionResult> ChangeRole(string userId, string newRole)
         {
-            if (id == null)
+            var user = await userManager.FindByIdAsync(userId);
+            if (user != null)
             {
-                _logger.LogWarning("Details action called with null ID.");
-                return NotFound();
+                var currentRoles = await userManager.GetRolesAsync(user);
+                await userManager.RemoveFromRolesAsync(user, currentRoles);
+                await userManager.AddToRoleAsync(user, newRole);
+                user.Role = newRole;
+                await userManager.UpdateAsync(user);
             }
-
-            try
-            {
-                var user = await _userManager.FindByIdAsync(id);
-                if (user == null)
-                {
-                    _logger.LogWarning("User with ID {Id} not found.", id);
-                    return NotFound();
-                }
-
-                var roles = await _userManager.GetRolesAsync(user);
-                var userViewModel = new UserViewModel
-                {
-                    Id = user.Id,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    Roles = roles
-                };
-
-                return View(userViewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving details for user with ID {Id}.", id);
-                return StatusCode(500, "An error occurred while retrieving user details. Please try again later.");
-            }
+            return RedirectToAction("Index");
         }
     }
 }

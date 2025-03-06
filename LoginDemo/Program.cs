@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add DbContext
+// Cấu hình DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("LoginDemo")));
 
-// Add Identity
+// Cấu hình Identity
 builder.Services.AddIdentity<Users, IdentityRole>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
@@ -24,14 +24,15 @@ builder.Services.AddIdentity<Users, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-// Thêm Authorization để tránh lỗi
+// Thêm Authorization
 builder.Services.AddAuthorization();
 
+// Thêm Controllers với Views
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Cấu hình Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -41,18 +42,17 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
-// Đảm bảo Authentication trước Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Thêm phần khởi tạo vai trò và tài khoản Admin mặc định
+// Khởi tạo dữ liệu ban đầu (vai trò và tài khoản Admin mặc định)
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var serviceProvider = scope.ServiceProvider;
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<Users>>();
 
-    // Tạo các vai trò Admin, Student, Teacher nếu chưa tồn tại
-    string[] roleNames = { "Admin", "Student", "Teacher" };
+    var roleNames = new[] { "Admin", "Student", "Teacher" };
     foreach (var roleName in roleNames)
     {
         if (!await roleManager.RoleExistsAsync(roleName))
@@ -61,10 +61,8 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Tạo tài khoản Admin mặc định (nếu chưa có)
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Users>>();
     string adminEmail = "admin@example.com";
-    string adminPassword = "Admin123456"; // Đảm bảo mật khẩu đáp ứng yêu cầu (ít nhất 8 ký tự)
+    string adminPassword = "Admin123456";
 
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
@@ -73,7 +71,7 @@ using (var scope = app.Services.CreateScope())
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true // Bỏ qua xác thực email vì bạn đã tắt RequireConfirmedEmail
+            EmailConfirmed = true
         };
         var result = await userManager.CreateAsync(adminUser, adminPassword);
         if (result.Succeeded)
@@ -82,7 +80,6 @@ using (var scope = app.Services.CreateScope())
         }
         else
         {
-            // Log lỗi nếu cần
             foreach (var error in result.Errors)
             {
                 Console.WriteLine($"Error creating admin user: {error.Description}");
@@ -91,6 +88,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Cấu hình định tuyến
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
