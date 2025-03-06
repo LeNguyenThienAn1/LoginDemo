@@ -51,6 +51,20 @@
                 </div>
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
+            <!-- Role Selection -->
+            <div class="mb-4">
+                <label asp-for="Role" class="form-label fw-medium text-dark">Select Role</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-people-fill"></i></span>
+                    <select asp-for="Role" class="form-select shadow-sm">
+                        <option value="">-- Select Role --</option>
+                        <option value="Student">Student</option>
+                        <option value="Teacher">Teacher</option>
+                    </select>
+                </div>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary w-100 p-3 fw-bold rounded-pill shadow-sm">Register</button>
