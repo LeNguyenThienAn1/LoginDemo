@@ -1,0 +1,55 @@
+﻿/* userform.css */
+
+.bg-gradient-primary-to-secondary {
+    background: linear-gradient(to right, #4e73df, #224abe);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+    .btn-primary:hover {
+        background-color: #224abe;
+        border-color: #224abe;
+    }
+
+.card {
+    transition: all 0.3s ease;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+.input-group-text {
+    background-color: #f8f9fa;
+}
+
+    .input-group-text i {
+        color: #6c757d;
+    }
+
+.card-header {
+    border-bottom: 0;
+}
+
+.card-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Additional responsive styles */
+@media (max-width: 768px) {
+    .card {
+        margin: 0 10px;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+}

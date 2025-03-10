@@ -88,9 +88,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
 // Cấu hình định tuyến
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 app.Run();
