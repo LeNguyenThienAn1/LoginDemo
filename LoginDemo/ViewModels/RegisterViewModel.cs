@@ -22,5 +22,9 @@ namespace LoginDemo.ViewModels
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; }
 
+        // Thêm trường Role để người dùng chọn vai trò (Student hoặc Teacher)
+        [Required(ErrorMessage = "Role is required.")]
+        [Display(Name = "Role")]
+        public string Role { get; set; }
     }
 }

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<LoginDemo.Models.Users>
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+        <a asp-action="CreateUser" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Add New User
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-center shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.FullName</td>
+                        <td>@user.Email</td>
+                        <td>
+                            <span class="badge bg-info text-dark p-2">@user.Role</span>
+                        </td>
+                        <td>
+                            <form method="post" asp-action="ChangeRole" class="d-inline">
+                                <input type="hidden" name="userId" value="@user.Id" />
+                                <div class="input-group">
+                                    <select name="newRole" class="form-select">
+                                        <option value="Student" selected="@(user.Role == "Student")">Student</option>
+                                        <option value="Teacher" selected="@(user.Role == "Teacher")">Teacher</option>
+                                        <option value="Admin" selected="@(user.Role == "Admin")">Admin</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-sync"></i> Update
+                                    </button>
+                                </div>
+                            </form>
+                            <a asp-action="DeleteUser" asp-route-id="@user.Id" class="btn btn-danger mt-2">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Thêm Font Awesome để có icon đẹp -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
